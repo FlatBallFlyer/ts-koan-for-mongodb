@@ -23,9 +23,11 @@ This koan makes use of a docker instance of MongoDB. You can start the MongoDB I
 docker compose up --detach
 ```
 
-Once those containers have started, you can access the Express instance [here](http://localhost:8081). Before you run the tests you should use Express to create a Database named "StageZero" and a collection named "Koan_products". If you miss this step you will get a `MongoServerError: ns doesn not exist: StageZero.Koan_products` error. There won't be much to see, that collection is emptied after each test run so there won't be data in it unless you time things just right.
+Once those containers have started, you can access the Express instance [here](http://localhost:8081). There won't be much to see, the test collection is emptied after each test run so there won't be data in it unless you time things just right.
 
-If you need to stop or start the containers you can use 
+Before you run the tests you should use Express to create a Database named "StageZero" and a collection named "Koan_products". If you miss this step you will get a `MongoServerError: ns doesn not exist: StageZero.Koan_products` error.
+
+If you need to stop or start the containers you can use:
 
 ```bash
 docker compose stop
@@ -37,13 +39,13 @@ or
 docker compose start
 ```
 
-When you are done with your testing you can stop the containers with:
+When you are done with your testing you can remove the containers with:
 
 ```bash
 docker compose down
 ```
 
-NOTE: docker compose down will remove the test database and collection. See above for details.
+NOTE: `docker compose down` will remove the test database and collection. See above for details on how to create it after a `docker compose up`.
 
 ## To install dependencies
 
