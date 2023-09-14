@@ -117,7 +117,6 @@ describe('MongoKoan', () => {
       expect(product).toHaveProperty("added");
       expect(product.added).toBe("NewValue");
     });
-
   });
 
   test('test aggregateGroupCount', async () => {
@@ -178,4 +177,3 @@ describe('MongoKoan', () => {
     await mongoKoan.disconnect();
   });
 });
-

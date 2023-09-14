@@ -12,7 +12,7 @@ export class MongoKoan {
 
   constructor() {
     this.client = new MongoClient(this.uri);
-    }
+  }
 
   public async connect(): Promise<Array<IndexInformationOptions> | {error: any}> {
     try {

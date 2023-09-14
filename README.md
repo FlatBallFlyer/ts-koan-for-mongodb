@@ -23,7 +23,7 @@ This koan makes use of a docker instance of MongoDB. You can start the MongoDB I
 docker compose up --detach
 ```
 
-Once those containers have started, you can access the Express instance [here](http://localhost:8081). There won't be much to see, after you run the tests at least once you should see a "StageZero" database with a koan_products collection, but that collection is emptied after each test run so there won't be data in it unless you time things just right.
+Once those containers have started, you can access the Express instance [here](http://localhost:8081). Before you run the tests you should use Express to create a Database named "StageZero" and a collection named "Koan_products". If you miss this step you will get a `MongoServerError: ns doesn not exist: StageZero.Koan_products` error. There won't be much to see, that collection is emptied after each test run so there won't be data in it unless you time things just right.
 
 When you are done with your testing you can stop the containers with:
 
