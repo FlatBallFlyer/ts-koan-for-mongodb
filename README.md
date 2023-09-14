@@ -5,7 +5,7 @@
 
 ## Contributors
 
-All contributions are welcome. There is a solutions branch, start from there. I am aware that this project breaks all kinds of unit testing best practices, we are using a backing service in unit tests after all. The jest tests are subject to timing problems, I did my best to minimize the probablilty that would occur.
+All contributions are welcome. There is a solutions branch, start from there. I am aware that this project breaks all kinds of unit testing best practices, we are using a backing service in unit tests after all. The jest tests are subject to timing problems, I did my best to minimize the probablilty that would occur, but the group by and count methods are still vunerable to disruption by other tests.
 
 ## Knowlege Seekers
 
@@ -23,18 +23,40 @@ This koan makes use of a docker instance of MongoDB. You can start the MongoDB I
 docker compose up --detach
 ```
 
-Once those containers have started, you can access the Express instance [here](http://localhost:8081). There won't be much to see, after you run the tests at least once you should see a "StageZero" database with a koan_products collection, but that collection is emptied after each test run so there won't be data in it unless you time things just right.
+Once those containers have started, you can access the Express instance [here](http://localhost:8081). There won't be much to see, the test collection is emptied after each test run so there won't be data in it unless you time things just right.
 
-When you are done with your testing you can stop the containers with:
+Before you run the tests you should use Express to create a Database named "StageZero" and a collection named "Koan_products". If you miss this step you will get a `MongoServerError: ns doesn not exist: StageZero.Koan_products` error.
+
+If you need to stop or start the containers you can use:
+
+```bash
+docker compose stop
+```
+
+or
+
+```bash
+docker compose start
+```
+
+When you are done with your testing you can remove the containers with:
 
 ```bash
 docker compose down
 ```
 
+NOTE: `docker compose down` will remove the test database and collection. See above for details on how to create it after a `docker compose up`.
+
 ## To install dependencies
 
 ```bash
 npm install
+```
+
+## To perform the TypeScript pre-compile
+
+```bash
+tsc
 ```
 
 ## To run jest tests
