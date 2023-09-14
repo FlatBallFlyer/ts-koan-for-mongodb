@@ -51,6 +51,12 @@ NOTE: docker compose down will remove the test database and collection. See abov
 npm install
 ```
 
+## To perform the TypeScript pre-compile
+
+```bash
+tsc
+```
+
 ## To run jest tests
 
 ```bash
