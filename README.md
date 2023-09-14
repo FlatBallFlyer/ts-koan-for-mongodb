@@ -27,14 +27,14 @@ Once those containers have started, you can access the Express instance [here](h
 
 If you need to stop or start the containers you can use 
 
-```
-mongo compose stop
+```bash
+docker compose stop
 ```
 
 or
 
-```
-mongo compose start
+```bash
+docker compose start
 ```
 
 When you are done with your testing you can stop the containers with:
