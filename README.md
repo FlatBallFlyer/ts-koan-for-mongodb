@@ -26,7 +26,7 @@ docker compose up --detach
 
 Once those containers have started, you can access the Express instance [here](http://localhost:8081). There won't be much to see, the test collection is emptied after each test run so there won't be data in it unless you time things just right.
 
-Before you run the tests you should use Express to create a Database named "StageZero" and a collection named "Koan_products". If you miss this step you will get a `MongoServerError: ns doesn not exist: StageZero.Koan_products` error.
+Before you run the tests you should use Express to create a Database named "StageZero" and a collection named "Koan_products", and another collection named "Koan_status". If you miss this step you will get a `MongoServerError: ns doesn not exist:` errors.
 
 If you need to stop or start the containers you can use:
 

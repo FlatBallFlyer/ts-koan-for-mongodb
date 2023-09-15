@@ -1,4 +1,4 @@
-import { productsData, statusData } from "./products";
+import { productsData, statusData } from "./TestData";
 import { Product, ProductWithId } from "./models/Product";
 import { MongoClient, Db, Collection, InsertManyResult, IndexInformationOptions, DeleteResult, InsertOneResult, ReturnDocument, FindOneAndReplaceOptions } from "mongodb";
 
@@ -10,26 +10,40 @@ export class MongoKoan {
   private client: MongoClient;
   private db!: Db; 
   private products!: Collection;
-  private statuts!: Collection;
+  private status!: Collection;
 
   constructor() {
     this.client = new MongoClient(this.uri);
   }
 
+  /**
+   * Connect to the Database, and initilize 
+   * products and status collection objects 
+   * 
+   * @returns Array of Index Information from both collections
+   */
   public async connect(): Promise<Array<IndexInformationOptions> | {error: any}> {
     try {
       await this.client.connect();
       this.db = this.client.db(this.dbName);
       this.products = this.db.collection(this.productsCollectionName);
-      this.statuts = this.db.collection(this.statusCollectionName);
+      this.status = this.db.collection(this.statusCollectionName);
 
-      return this.products.listIndexes().toArray();
+      const productIndexes = await this.products.listIndexes().toArray();
+      const statusIndexes = await this.status.listIndexes().toArray();
+      return [...productIndexes, ...statusIndexes];
       // throw("To Be Implemented")
     } catch (error) {
       return {"error": error};
     }
   }
 
+  /**
+   * Load all of the products from the TestData file
+   * into the this.products collection
+   * 
+   * @returns the InsertManyResult from MongoDB
+   */
   public async loadAllProducts(): Promise<InsertManyResult<ProductWithId> | { error: any }> {
     try {
       return await this.products.insertMany(productsData);
@@ -39,15 +53,26 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Load all of the products from the TestData file
+   * into this.status collection
+   * 
+   * @returns the InsertManyResult from MongoDB
+   */
   public async laodAllStatus(): Promise<InsertManyResult<ProductWithId> | { error: any }> {
     try {
-      return await this.statuts.insertMany(statusData);
+      return await this.status.insertMany(statusData);
       // throw("To Be Implemented"); 
     } catch (error) {
       return { "error": error };
     }
   }
 
+  /**
+   * Get all the documents from the products collection
+   * 
+   * @returns Array of Products
+   */
   public async getAll(): Promise< Array<ProductWithId> | {error: any}> {
     try {
       return await this.products.find({}).toArray() as Array<ProductWithId>;
@@ -57,6 +82,11 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Cout all of the documents in the products collection
+   * 
+   * @returns The number of documents in the products collection
+   */
   public async countAll(): Promise< number | {error: any}> {
     var result: number | { error: any };
     try {
@@ -67,6 +97,12 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Insert a single document into the products collection
+   * 
+   * @param product the Product to insert
+   * @returns InsertOneResults from MongoDB
+   */
   public async addOne(product: Product): Promise<InsertOneResult<Product> | { error: any }> {
     try {
       return await this.products.insertOne(product);
@@ -76,6 +112,13 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Get a product given the id 
+   * NOTE: This is id, not _id
+   * 
+   * @param id the id of the prodcut to return
+   * @returns a single product
+   */
   public async getOne(id: string): Promise<ProductWithId | {error: any}> {
     try {
       return await this.products.findOne({"id": id}) as ProductWithId;
@@ -85,6 +128,13 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Add an instock property to the product specified, with the value specified
+   * 
+   * @param id the Id of the product to update (NOT _id)
+   * @param quantity the number to use with the new instock property
+   * @returns the product after update
+   */
   public async setInStock(id: string, quantity: number): Promise<ProductWithId | {error: any}> {
     try {
       const filter = { "id": id };
@@ -97,6 +147,14 @@ export class MongoKoan {
     } 
   }
 
+  /**
+   * Decrement the inventoryQuantity on the specified product by the amount specified
+   * NOTE quantity of 2 means DECriment quantity by 2
+   * 
+   * @param id the id of the document to update (NOT _id)
+   * @param quantity the quantity to decrement by
+   * @returns the updated document
+   */
   public async decrementInventoryQuantity(id: string, quantity: number): Promise<ProductWithId | {error: any}> {
     try {
       const selector = { "id": id };
@@ -110,6 +168,13 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Add new tags property to a product and initilize it with the list provided
+   * 
+   * @param id the document id to be updated (NOT _id)
+   * @param tags the list of tags to add to that document
+   * @returns the updated product
+   */
   public async addTags(id: string, tags: Array<string>): Promise<ProductWithId | {error: any}> {
     try {
       const filter = {"id":id};
@@ -123,6 +188,13 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Add a sinle tag value to the tags list
+   * 
+   * @param id the document id to be updated (NOT _id)
+   * @param tag the single string to add to tags list
+   * @returns the updated product
+   */
   public async pushTag(id: string, tag: string): Promise<ProductWithId | {error: any}> {
     try {
       const filter = {"id":id};
@@ -136,6 +208,13 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Add a list of tags to an existing tags attribute
+   * 
+   * @param id the id of the product to update (NOT _id)
+   * @param tags the list of tags to add 
+   * @returns the updated product
+   */
   public async pushTags(id: string, tags: Array<string>): Promise<ProductWithId | {error: any}> {
     try {
       const filter = {"id":id};
@@ -148,6 +227,12 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * delete a single document in the products collection
+   * 
+   * @param id the id of the product to delete (NOT _id)
+   * @returns the DeleteResult from MongoDB
+   */
   public async deleteOne(id: string): Promise<DeleteResult | {error: any}>{
     try {
       const filter = {"id":id};
@@ -158,6 +243,14 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * For all of the products with a name greater than or equal to 
+   * the provided value, return only the specified properties
+   * 
+   * @param minimumName minimum name value
+   * @param fields list of properties to return
+   * @returns Array of products with only the requested properties
+   */
   public async getWithProjection(minimumName: string, fields: Array<string>): Promise<Array<ProductWithId> | {error: any}> {
     try {
       const selector: { [key: string]: any } = {name: {$gte:minimumName}};
@@ -171,6 +264,14 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Find all the products that have a transaction with both
+   * the provided description, and a credit value greater than a minimum
+   * 
+   * @param description the transaction description
+   * @param minimumCredit 
+   * @returns List of products that match
+   */
   public async elemMatch(description: string, minimumCredit: number): Promise<Array<ProductWithId> | {error: any}> {
     try {
       const filter = {
@@ -188,6 +289,12 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Return all the products with a status that is in the list provided
+   * 
+   * @param statsOptions List of status to include
+   * @returns List of products selected
+   */
   public async inMatch(statsOptions: Array<string>): Promise<Array<ProductWithId> | {error: any}> {
     try {
       const filter = {status: {$in: statsOptions}};
@@ -198,6 +305,16 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Given a status, update all the products that match a provided status, 
+   * sorted by name decending, with a new filed called "added" that has 
+   * the value provided, and only return the name, added, and status properties
+   * NOTE: Do not include the _id property in the return value
+   * 
+   * @param addTextValue value to be added 
+   * @param status status of products to be updated
+   * @returns an arry of objects with name, added, and status properties
+   */
   public async aggregateSortAdd(addTextValue: string, status: string): Promise<Array<{name: string, status: string, added: string}> | {error: any}> {
     try {
       const selector = {status: status};
@@ -217,6 +334,11 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Return the number of products by status, with the total inventoryQuantity
+   * 
+   * @returns  an array of status, count, and quantity
+   */
   public async aggregateGroupCount(): Promise<Array<{"_id": string, count: number, inventory: number}> | {error: any}> {
       try {
         const groupby = {_id:"$status", count: {$count:{}}, inventory:{$sum:"$inventoryQuantity"}};
@@ -236,7 +358,12 @@ export class MongoKoan {
       }
     }
   
-  
+  /**
+   * Create a new index on the products collection that 
+   * is on ascend name, with a unique constraint
+   * 
+   * @returns The name of the index created
+   */
   public async createUniqueNameIndex(): Promise<string | {error: any}> {
     try {
       return await this.products.createIndex( {name:1},{unique:true} );
@@ -245,6 +372,11 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Get a list of the indexes on the products collection
+   * 
+   * @returns the list
+   */
   public async listIndexs(): Promise<Array<IndexInformationOptions> | {error: any}> {
     try {
       return await this.products.indexes({full:true});
@@ -254,6 +386,12 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * Remove an index from the products collection
+   * 
+   * @param name the name of the index to drop
+   * @returns the MongoDB drop index return value
+   */
   public async dropIndex(name: string): Promise<any> {
     try {
       return await this.products.dropIndex(name);
@@ -263,6 +401,11 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * get a list of indexes for the products and then drop all of them
+   * 
+   * @returns undefined or an error
+   */
   public async dropAllIndexs() {
     try {
       const indexes = await(this.listIndexs()) as Array<any>;
@@ -277,7 +420,12 @@ export class MongoKoan {
     }
   }
 
-  public async cursorIterate(status: string): Promise<number | {error: any}> {
+  /**
+   * Use a cursor to iterate over all documents and total inventoryQuantity
+   * 
+   * @returns the total of inventoryQuantity
+   */
+  public async cursorIterate(): Promise<number | {error: any}> {
     try {
       // Get Cursor
       var quantity: number = 0;
@@ -295,6 +443,12 @@ export class MongoKoan {
     }
   }
     
+  /**
+   * Update a product document by replacing the entire document with a new document
+   * 
+   * @param product the new Prodcut to use
+   * @returns the new product document
+   */
   public async replaceProduct(product: Product): Promise<ProductWithId | {"error":any}> {
     try {
       // Code to replace the product with product.id with the product provided
@@ -307,6 +461,14 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * use the $and operator to find all products with a given status
+   * and a inventoryQuantity greater than or equal to the required level
+   * 
+   * @param status the status to use
+   * @param requiredInventory the minimum inventory 
+   * @returns an array of the Products that match
+   */
   public async findProductsLogical(status: string, requiredInventory: number): Promise<Array<ProductWithId> | {"error":any}> {
     try {
       const filter = {$and: [
@@ -322,6 +484,16 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * use the $and operator to find all products with a given status
+   * and a inventoryQuantity greater than or equal to the required level
+   * and join them to the corresponding document from status collection
+   * (where product.status == status.status)
+   * 
+   * @param status the status to use
+   * @param requiredInventory the minimum inventory 
+   * @returns an array of the Products with statuses
+   */
   public async productsWithStatus(status: string, requiredInventory: number): Promise<Array<any> | {"error":any}> {
     try {
       const selector = {
@@ -347,10 +519,16 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * delete all the documents in both the prodcuts and status collections
+   * 
+   * @returns undefined or an error
+   */
   public async deleteAll() {
     try {
+      // delete all documents in the products and status collections
       const allProductsDeleted = await this.products.deleteMany({});
-      const allStatusDeleted = await this.statuts.deleteMany({});
+      const allStatusDeleted = await this.status.deleteMany({});
       return;
       // throw("To Be Implemented"); 
     } catch (error) {
@@ -358,6 +536,9 @@ export class MongoKoan {
     }
   }
 
+  /**
+   * disconnect from the mongo database
+   */
   public async disconnect(): Promise<void> {
     try {
       await this.client.close();
@@ -365,16 +546,6 @@ export class MongoKoan {
       console.log("Disconnected from MongoDB");
     } catch (error) {
       console.error("Failed to disconnect from MongoDB:", error);
-    }
-  }
-
-  public async update(filter: object, update: object): Promise<void> {
-    try {
-      const result = await this.products.updateOne(filter, { $set: update });
-      console.log(`Matched ${result.matchedCount} and modified ${result.modifiedCount} documents`);
-      // throw("To Be Implemented"); 
-    } catch (error) {
-      console.error("Failed to update document:", error);
     }
   }
 }

@@ -4,7 +4,7 @@ import { IndexInformationOptions, InsertManyResult, InsertOneResult, MongoServer
 import { Status } from './models/Status';
 
 describe('MongoKoan', () => {
-  let mongoKoan: MongoKoan; 
+  let mongoKoan: MongoKoan;
 
   beforeAll(async () => {
     mongoKoan = new MongoKoan();
@@ -169,7 +169,7 @@ describe('MongoKoan', () => {
 
   test('test cursorIterate', async () => {
     const id: string = "";
-    const response = await mongoKoan.cursorIterate("deleted") as number;
+    const response = await mongoKoan.cursorIterate() as number;
     expect(response).toBe(754);
   });
 
