@@ -2,6 +2,8 @@ import { productsData, statusData } from "./TestData";
 import { Product, ProductWithId } from "./models/Product";
 import { MongoClient, Db, Collection, InsertManyResult, IndexInformationOptions, DeleteResult, InsertOneResult, ReturnDocument, FindOneAndReplaceOptions } from "mongodb";
 
+// To complete this koan you will need to write the methods below
+// I strongly suggest starting with the connect, deleteAll, and disconnect methods
 export class MongoKoan {
   private dbName: string = "StageZero";
   private productsCollectionName: string = "Koan_products";
@@ -242,6 +244,8 @@ export class MongoKoan {
    * @returns List of products selected
    */
   public async inMatch(statsOptions: Array<string>): Promise<Array<ProductWithId> | {error: any}> {
+    // this method should
+    //  find all the products with a Status that is in the list of status provided in statusOptions
     try {
       throw("To Be Implemented")
     } catch (error) {
@@ -260,6 +264,10 @@ export class MongoKoan {
    * @returns an arry of objects with name, added, and status properties
    */
   public async aggregateSortAdd(addTextValue: string, status: string): Promise<Array<{name: string, status: string, added: string}> | {error: any}> {
+    // this method should use an Aggregation to
+    //  find all products with the status provided
+    //  add a "added" attribute to the results, with a value provided in addTextValue
+    //  create a projection that includes only the name, status, and added attributes
     try {
       throw("To Be Implemented")
     } catch (error) {
@@ -300,6 +308,8 @@ export class MongoKoan {
    * @returns the list
    */
   public async listIndexs(): Promise<Array<IndexInformationOptions> | {error: any}> {
+    // this method should
+    //  return a list of the indexes in the collection
     try {
       throw("To Be Implemented")
     } catch (error) {
@@ -314,6 +324,8 @@ export class MongoKoan {
    * @returns the MongoDB drop index return value
    */
   public async dropIndex(name: string): Promise<any> {
+    // this method should drop the identified index
+    //  and return the response with statistics
     try {
       throw("To Be Implemented")
     } catch (error) {
@@ -327,6 +339,9 @@ export class MongoKoan {
    * @returns undefined or an error
    */
   public async dropAllIndexs() {
+    // this method should
+    //  iterate over all the indexes in the colleciton
+    //  drop every index that is not named "_id_"
     try {
       throw("To Be Implemented")
     } catch (error) {
