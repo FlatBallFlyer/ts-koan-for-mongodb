@@ -1,14 +1,16 @@
-import { productsData } from "./products";
+import { productsData, statusData } from "./products";
 import { Product, ProductWithId } from "./models/Product";
-import { MongoClient, Db, Collection, InsertManyResult, IndexInformationOptions, DeleteResult, InsertOneResult, ReturnDocument } from "mongodb";
+import { MongoClient, Db, Collection, InsertManyResult, IndexInformationOptions, DeleteResult, InsertOneResult, ReturnDocument, FindOneAndReplaceOptions } from "mongodb";
 
 export class MongoKoan {
   private dbName: string = "StageZero";
-  private collectionName: string = "Koan_products";
+  private productsCollectionName: string = "Koan_products";
+  private statusCollectionName: string = "Koan_status";
   private uri: string = "mongodb://root:example@localhost:27017/?tls=false&directConnection=true";
   private client: MongoClient;
   private db!: Db; 
-  private collection!: Collection;
+  private products!: Collection;
+  private statuts!: Collection;
 
   constructor() {
     this.client = new MongoClient(this.uri);
@@ -18,27 +20,37 @@ export class MongoKoan {
     try {
       await this.client.connect();
       this.db = this.client.db(this.dbName);
-      this.collection = this.db.collection(this.collectionName);
+      this.products = this.db.collection(this.productsCollectionName);
+      this.statuts = this.db.collection(this.statusCollectionName);
 
-      return this.collection.listIndexes().toArray();
+      return this.products.listIndexes().toArray();
       // throw("To Be Implemented")
     } catch (error) {
       return {"error": error};
     }
   }
 
-  public async loadAll(): Promise<InsertManyResult<ProductWithId> | { error: any }> {
+  public async loadAllProducts(): Promise<InsertManyResult<ProductWithId> | { error: any }> {
     try {
-      return await this.collection.insertMany(productsData);
+      return await this.products.insertMany(productsData);
       // throw("To Be Implemented")
     } catch (error) {
       return { error };
     }
   }
 
+  public async laodAllStatus(): Promise<InsertManyResult<ProductWithId> | { error: any }> {
+    try {
+      return await this.statuts.insertMany(statusData);
+      // throw("To Be Implemented"); 
+    } catch (error) {
+      return { "error": error };
+    }
+  }
+
   public async getAll(): Promise< Array<ProductWithId> | {error: any}> {
     try {
-      return await this.collection.find({}).toArray() as Array<ProductWithId>;
+      return await this.products.find({}).toArray() as Array<ProductWithId>;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -48,7 +60,7 @@ export class MongoKoan {
   public async countAll(): Promise< number | {error: any}> {
     var result: number | { error: any };
     try {
-      return await this.collection.countDocuments({});
+      return await this.products.countDocuments({});
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -57,7 +69,7 @@ export class MongoKoan {
 
   public async addOne(product: Product): Promise<InsertOneResult<Product> | { error: any }> {
     try {
-      return await this.collection.insertOne(product);
+      return await this.products.insertOne(product);
       // throw("To Be Implemented")      
     } catch (error) {
       return {"error": error };
@@ -66,7 +78,7 @@ export class MongoKoan {
 
   public async getOne(id: string): Promise<ProductWithId | {error: any}> {
     try {
-      return await this.collection.findOne({"id": id}) as ProductWithId;
+      return await this.products.findOne({"id": id}) as ProductWithId;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -79,7 +91,7 @@ export class MongoKoan {
       const update = { $set: {"instock":quantity} };
       const option = { returnDocument: ReturnDocument.AFTER };
 
-      return await this.collection.findOneAndUpdate(filter, update, option) as ProductWithId;
+      return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
     } catch (error) {
       return {"error":error};
     } 
@@ -91,7 +103,7 @@ export class MongoKoan {
       const updater = {$inc:{inventoryQuantity: -quantity}};
       const option = { returnDocument: ReturnDocument.AFTER };
 
-      return await this.collection.findOneAndUpdate(selector, updater, option) as ProductWithId;
+      return await this.products.findOneAndUpdate(selector, updater, option) as ProductWithId;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -104,7 +116,7 @@ export class MongoKoan {
       const update = {$set:{"tags":tags}};
       const option = { returnDocument: ReturnDocument.AFTER };
 
-      return await this.collection.findOneAndUpdate(filter, update, option) as ProductWithId;
+      return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -118,7 +130,7 @@ export class MongoKoan {
       const update = {$push:{"tags":tag}} as any;
       const option = { returnDocument: ReturnDocument.AFTER };
 
-      return await this.collection.findOneAndUpdate(filter, update, option) as ProductWithId;
+      return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
     } catch (error) {
       return {"error":error};
     }
@@ -129,7 +141,7 @@ export class MongoKoan {
       const filter = {"id":id};
       const update = {$push:{tags: {$each:tags}}} as any;
       const option = { returnDocument: ReturnDocument.AFTER };
-      return await this.collection.findOneAndUpdate(filter, update, option) as ProductWithId;
+      return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -139,7 +151,7 @@ export class MongoKoan {
   public async deleteOne(id: string): Promise<DeleteResult | {error: any}>{
     try {
       const filter = {"id":id};
-      return await this.collection.deleteOne(filter);
+      return await this.products.deleteOne(filter);
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -152,7 +164,7 @@ export class MongoKoan {
       const projection: { [key: string]: any } = {_id:0};
       fields.forEach((field) => {projection[field] = 1;});
 
-      return await this.collection.find(selector).project(projection).toArray() as Array<ProductWithId>;
+      return await this.products.find(selector).project(projection).toArray() as Array<ProductWithId>;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -169,7 +181,7 @@ export class MongoKoan {
           }
         }
       };
-      return await this.collection.find(filter).toArray() as Array<ProductWithId>;
+      return await this.products.find(filter).toArray() as Array<ProductWithId>;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -179,7 +191,7 @@ export class MongoKoan {
   public async inMatch(statsOptions: Array<string>): Promise<Array<ProductWithId> | {error: any}> {
     try {
       const filter = {status: {$in: statsOptions}};
-      return await this.collection.find(filter).sort({"name":1}).toArray() as Array<ProductWithId>;
+      return await this.products.find(filter).sort({"name":1}).toArray() as Array<ProductWithId>;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -198,7 +210,7 @@ export class MongoKoan {
         {$set: addField },
         {$project: projection},
       ];
-      return await this.collection.aggregate(pipeline).toArray() as Array<{name: string, status: string, added: string}>;
+      return await this.products.aggregate(pipeline).toArray() as Array<{name: string, status: string, added: string}>;
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -215,7 +227,7 @@ export class MongoKoan {
           {$sort: sort},
           {$project: projection},
         ];
-        const cursor = this.collection.aggregate(pipeline);
+        const cursor = this.products.aggregate(pipeline);
         const reply = await cursor.toArray() as Array<{"_id": string, count: number, inventory: number}>;
         return reply;
         // throw("To Be Implemented")
@@ -227,7 +239,7 @@ export class MongoKoan {
   
   public async createUniqueNameIndex(): Promise<string | {error: any}> {
     try {
-      return await this.collection.createIndex( {name:1},{unique:true} );
+      return await this.products.createIndex( {name:1},{unique:true} );
     } catch (error) {
       return {"error":error};
     }
@@ -235,7 +247,7 @@ export class MongoKoan {
 
   public async listIndexs(): Promise<Array<IndexInformationOptions> | {error: any}> {
     try {
-      return await this.collection.indexes({full:true});
+      return await this.products.indexes({full:true});
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -244,7 +256,7 @@ export class MongoKoan {
 
   public async dropIndex(name: string): Promise<any> {
     try {
-      return await this.collection.dropIndex(name);
+      return await this.products.dropIndex(name);
       // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
@@ -269,7 +281,7 @@ export class MongoKoan {
     try {
       // Get Cursor
       var quantity: number = 0;
-      const cursor = this.collection.find({});
+      const cursor = this.products.find({});
       while (await cursor.hasNext()) {
         const product = await cursor.next() as ProductWithId;
         if (product.inventoryQuantity) {
@@ -283,9 +295,67 @@ export class MongoKoan {
     }
   }
     
+  public async replaceProduct(product: Product): Promise<ProductWithId | {"error":any}> {
+    try {
+      // Code to replace the product with product.id with the product provided
+      const filter = {"id": product.id};
+      const options: FindOneAndReplaceOptions = {"returnDocument": "after"};
+      return await this.products.findOneAndReplace(filter, product, options) as unknown as ProductWithId;
+      // throw("To Be Implemented"); 
+    } catch (error) {
+      return {"error":error};
+    }
+  }
+
+  public async findProductsLogical(status: string, requiredInventory: number): Promise<Array<ProductWithId> | {"error":any}> {
+    try {
+      const filter = {$and: [
+        {"status": status},
+        {"inventoryQuantity": {$gte: requiredInventory}},
+      ]};
+
+      return await this.products.find(filter).toArray() as Array<ProductWithId>;
+      //  inventoryQuantity greater than or equal to the value provided
+      throw("To Be Implemented"); 
+    } catch (error) {
+      return {"error":error};
+    }
+  }
+
+  public async productsWithStatus(status: string, requiredInventory: number): Promise<Array<any> | {"error":any}> {
+    try {
+      const selector = {
+        $and: [
+          {status: status}, 
+          {inventoryQuantity: {$gte:requiredInventory}},
+        ]
+      };
+      const lookup = {
+        from: this.statusCollectionName, 
+        localField: "status", 
+        foreignField: "status", 
+        as: "statusItem",
+      }; 
+      const pipeline = [
+        {$match: selector},
+        {$lookup: lookup},
+      ];
+      return await this.products.aggregate(pipeline).toArray() as Array<any>;
+
+      // find all products with the status provided, AND 
+      //  inventoryQuantity greater than or equal to the value provided
+      //  and join with the status collection (status = status) into an array called statusItem
+      throw("To Be Implemented"); 
+    } catch (error) {
+      return {"error":error};
+    }
+  }
+
   public async deleteAll() {
     try {
-      return await this.collection.deleteMany({});
+      const allProductsDeleted = await this.products.deleteMany({});
+      const allStatusDeleted = await this.statuts.deleteMany({});
+      return;
       // throw("To Be Implemented"); 
     } catch (error) {
       return {"error":error};
@@ -295,6 +365,7 @@ export class MongoKoan {
   public async disconnect(): Promise<void> {
     try {
       await this.client.close();
+      // throw("To Be Implemented"); 
       console.log("Disconnected from MongoDB");
     } catch (error) {
       console.error("Failed to disconnect from MongoDB:", error);
@@ -303,8 +374,9 @@ export class MongoKoan {
 
   public async update(filter: object, update: object): Promise<void> {
     try {
-      const result = await this.collection.updateOne(filter, { $set: update });
+      const result = await this.products.updateOne(filter, { $set: update });
       console.log(`Matched ${result.matchedCount} and modified ${result.modifiedCount} documents`);
+      // throw("To Be Implemented"); 
     } catch (error) {
       console.error("Failed to update document:", error);
     }
