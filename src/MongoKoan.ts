@@ -341,10 +341,6 @@ export class MongoKoan {
         {$lookup: lookup},
       ];
       return await this.products.aggregate(pipeline).toArray() as Array<any>;
-
-      // find all products with the status provided, AND 
-      //  inventoryQuantity greater than or equal to the value provided
-      //  and join with the status collection (status = status) into an array called statusItem
       throw("To Be Implemented"); 
     } catch (error) {
       return {"error":error};

@@ -216,11 +216,11 @@ describe('MongoKoan', () => {
       expect(product).toHaveProperty("statusItem");
       expect(product.statusItem).toBeInstanceOf(Array<Status>);
       expect(product.statusItem).toHaveLength(1);
-      const itemList = product.statusItem as Array<Status>;
-      itemList.forEach(item => {
-        expect(item.status).toBe(status);
-      });
-      expect(product.statusItem[0].status).toBe(product.status);
+      const item = product.statusItem[0] as Status;
+      expect(item.status).toBe(status);
+      expect(item).toHaveProperty("description");
+      expect(item).toHaveProperty("importance");
+      expect(item).toHaveProperty("nextStatus");
     });
   });
 
