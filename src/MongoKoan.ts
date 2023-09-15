@@ -142,6 +142,7 @@ export class MongoKoan {
       const option = { returnDocument: ReturnDocument.AFTER };
 
       return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
+      // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
     } 
@@ -198,11 +199,11 @@ export class MongoKoan {
   public async pushTag(id: string, tag: string): Promise<ProductWithId | {error: any}> {
     try {
       const filter = {"id":id};
-      // const update: UpdateFilter<ProductWithId> = { $push: { tags: tag } };
       const update = {$push:{"tags":tag}} as any;
       const option = { returnDocument: ReturnDocument.AFTER };
 
       return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
+      // throw("To Be Implemented")
     } catch (error) {
       return {"error":error};
     }
@@ -477,8 +478,7 @@ export class MongoKoan {
       ]};
 
       return await this.products.find(filter).toArray() as Array<ProductWithId>;
-      //  inventoryQuantity greater than or equal to the value provided
-      throw("To Be Implemented"); 
+      // throw("To Be Implemented"); 
     } catch (error) {
       return {"error":error};
     }
@@ -513,7 +513,7 @@ export class MongoKoan {
         {$lookup: lookup},
       ];
       return await this.products.aggregate(pipeline).toArray() as Array<any>;
-      throw("To Be Implemented"); 
+      // throw("To Be Implemented"); 
     } catch (error) {
       return {"error":error};
     }
