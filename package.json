@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "npx jest",
+    "test:watch": "npx jest --watch",
     "tsc:watch": "tsc --watch"
   },
   "jest": {

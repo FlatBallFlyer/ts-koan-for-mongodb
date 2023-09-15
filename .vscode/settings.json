@@ -3,6 +3,9 @@
       "**/*.js": { "when": "$(basename).ts"},
       "**/*.js.map": true,
       "node_modules": true
-    }
+    },
+    "jest.pathToJest": "npm test",
+    "jest.rootPath": "./src",
+    "jest.pathToConfig": "./src/jest.config.js"    
 }
   

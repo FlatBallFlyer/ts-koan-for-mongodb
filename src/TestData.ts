@@ -490,3 +490,23 @@ export const productsData = [
     }
   }
 ];
+export const statusData = [
+  {
+    "status": "draft",
+    "description": "These are documents that are currently being edited, and the user had not inidcated they have finished editing",
+    "importance": 2,
+    "nextStatus": ["active","deleted"]
+  },
+  {
+    "status": "active",
+    "description": "These are documents saved and valid",
+    "importance": 3,
+    "nextStatus": ["draft","deleted"],
+  },
+  {
+    "status": "deleted",
+    "description": "These are documents that have been marked as deleted and their status can only be changed by an administrator",
+    "importance": 0,
+    "nextStatus": ["draft"]
+  },
+];

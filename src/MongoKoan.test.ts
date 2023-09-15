@@ -1,20 +1,22 @@
 import { MongoKoan } from './MongoKoan';
 import { Product, ProductWithId } from './models/Product';
 import { IndexInformationOptions, InsertManyResult, InsertOneResult, MongoServerError } from 'mongodb';
+import { Status } from './models/Status';
 
 describe('MongoKoan', () => {
-  let mongoKoan: MongoKoan; 
+  let mongoKoan: MongoKoan;
 
   beforeAll(async () => {
     mongoKoan = new MongoKoan();
     const connectResult = await mongoKoan.connect() as Array<IndexInformationOptions>;
-    const loadAllResult = await mongoKoan.loadAll() as InsertManyResult<ProductWithId>;
+    const allProductsResult = await mongoKoan.loadAllProducts() as InsertManyResult<ProductWithId>;
+    const allStatusResult = await mongoKoan.laodAllStatus() as InsertManyResult<ProductWithId>;
   });
 
   test('test countAll', async () => {
     const response = await mongoKoan.countAll(); 
     expect(response).toEqual(36);
-  }); 
+  });
 
   test('get all documents', async () => {
     const response = await mongoKoan.getAll() as Array<ProductWithId>;
@@ -26,7 +28,7 @@ describe('MongoKoan', () => {
       "id": "myNewProduct",
       "name": "This is a test product",
       "status": "draft",
-    }; 
+    };
 
     const insertResult = await mongoKoan.addOne(product) as InsertOneResult<ProductWithId>;
     expect(insertResult).toHaveProperty("insertedId");
@@ -117,7 +119,6 @@ describe('MongoKoan', () => {
       expect(product).toHaveProperty("added");
       expect(product.added).toBe("NewValue");
     });
-
   });
 
   test('test aggregateGroupCount', async () => {
@@ -168,8 +169,59 @@ describe('MongoKoan', () => {
 
   test('test cursorIterate', async () => {
     const id: string = "";
-    const response = await mongoKoan.cursorIterate("deleted") as number;
+    const response = await mongoKoan.cursorIterate() as number;
     expect(response).toBe(754);
+  });
+
+  test('test findOneAndReplace', async () => {
+    // test update whole document
+    const product: Product = {
+      id: "32915c30-50fb-11ee-be56-0242ac120002",
+      name: "New fancy blender",
+      description: "this record was updated",
+      status: "draft"
+    }
+    const response = await mongoKoan.replaceProduct(product);
+    expect(response).toMatchObject(product);
+    expect(response).not.toHaveProperty("inventoryQuantity");
+    expect(response).not.toHaveProperty("lastUpdated");
+  });
+
+  test('test testLogical', async () => {
+    // test findAndModify whole document
+    const id = "329157b2-50fb-11ee-be56-0242ac120002";
+    const status = "active";
+    const requiredInventory = 42;
+  
+    const response = await mongoKoan.findProductsLogical(status, requiredInventory) as Array<ProductWithId>;
+    expect(response).toBeInstanceOf(Array<ProductWithId>);
+    expect(response.length).toBeGreaterThan(0);
+    response.forEach(product => {
+        expect(product.status).toBe(status);
+        expect(product.inventoryQuantity).toBeGreaterThanOrEqual(requiredInventory);
+    });
+  });
+
+  test('test $lookup', async () => {
+    // test cross collection joins
+    const status = "active";
+    const requiredInventory = 45;
+
+    const response = await mongoKoan.productsWithStatus(status, requiredInventory) as Array<any>;
+    // expect(response).toMatchObject({"foo":"bar"});
+    expect(response).toBeInstanceOf(Array<ProductWithId>);
+    response.forEach(product => {
+      expect(product.status).toBe(status);
+      expect(product.inventoryQuantity).toBeGreaterThanOrEqual(requiredInventory);
+      expect(product).toHaveProperty("statusItem");
+      expect(product.statusItem).toBeInstanceOf(Array<Status>);
+      expect(product.statusItem).toHaveLength(1);
+      const item = product.statusItem[0] as Status;
+      expect(item.status).toBe(status);
+      expect(item).toHaveProperty("description");
+      expect(item).toHaveProperty("importance");
+      expect(item).toHaveProperty("nextStatus");
+    });
   });
 
   afterAll(async () => {
@@ -178,4 +230,3 @@ describe('MongoKoan', () => {
     await mongoKoan.disconnect();
   });
 });
-

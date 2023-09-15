@@ -12,6 +12,7 @@ All contributions are welcome. There is a solutions branch, start from there. I 
 If you are not familar with software koan's you can think of them as Test Driven Learning. The /src/MongoKoan.ts file has a collection of methods that currently return errors. The /src/MongoKoan.test.ts is a set of Jest unit tests that test those methods. Your goal is to update the MongoKoan.ts file with the code that makes the tests pass. Start with the connect, disconnect, and deleteAll methods to make your path smooth. All is answered in the solved branch, but your journey may lead to better answers so don't follow the road already debugged. This koan is designed to help you prepare for the node.js MongoDB Associate Developer certification exam. The examples here will  not appear in the exam, but the knowledge gained here will help you to prepare. May you find deep inner peace on your certification journey.
 
 ## Prerequists
+
 - [Docker](https://docs.docker.com/desktop/install/mac-install/)
 - NPM and Node (I suggest [using NVM](https://heynode.com/tutorial/install-nodejs-locally-nvm/))
 
@@ -25,7 +26,7 @@ docker compose up --detach
 
 Once those containers have started, you can access the Express instance [here](http://localhost:8081). There won't be much to see, the test collection is emptied after each test run so there won't be data in it unless you time things just right.
 
-Before you run the tests you should use Express to create a Database named "StageZero" and a collection named "Koan_products". If you miss this step you will get a `MongoServerError: ns doesn not exist: StageZero.Koan_products` error.
+Before you run the tests you should use Express to create a Database named "StageZero" and a collection named "Koan_products", and another collection named "Koan_status". If you miss this step you will get a `MongoServerError: ns doesn not exist:` errors.
 
 If you need to stop or start the containers you can use:
 
