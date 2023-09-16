@@ -1,17 +1,23 @@
 import { productsData, statusData } from "./TestData";
 import { Product, ProductWithId } from "./models/Product";
-import { MongoClient, Db, Collection, InsertManyResult, IndexInformationOptions, DeleteResult, InsertOneResult, ReturnDocument, FindOneAndReplaceOptions } from "mongodb";
+import { MongoClient, Db, Collection, InsertManyResult, 
+  IndexInformationOptions, DeleteResult, InsertOneResult, 
+  ReturnDocument, FindOneAndReplaceOptions } from "mongodb";
 
 export class MongoKoan {
   private dbName: string = "StageZero";
   private productsCollectionName: string = "Koan_products";
   private statusCollectionName: string = "Koan_status";
   private uri: string = "mongodb://root:example@localhost:27017/?tls=false&directConnection=true";
+  
   private client: MongoClient;
   private db!: Db; 
   private products!: Collection;
   private status!: Collection;
 
+  /**
+   * Constructor - initilize client with connection URI
+   */
   constructor() {
     this.client = new MongoClient(this.uri);
   }
