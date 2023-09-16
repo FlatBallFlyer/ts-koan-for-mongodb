@@ -38,7 +38,7 @@ export class MongoKoan {
       const productIndexes = await this.products.listIndexes().toArray();
       const statusIndexes = await this.status.listIndexes().toArray();
       return [...productIndexes, ...statusIndexes];
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error": error};
     }
@@ -53,7 +53,7 @@ export class MongoKoan {
   public async loadAllProducts(): Promise<InsertManyResult<ProductWithId> | { error: any }> {
     try {
       return await this.products.insertMany(productsData);
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return { error };
     }
@@ -84,7 +84,7 @@ export class MongoKoan {
   public async getOne(id: string): Promise<ProductWithId | {error: any}> {
     try {
       return await this.products.findOne({"id": id}) as ProductWithId;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -98,7 +98,7 @@ export class MongoKoan {
   public async getAll(): Promise< Array<ProductWithId> | {error: any}> {
     try {
       return await this.products.find({}).toArray() as Array<ProductWithId>;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -110,10 +110,9 @@ export class MongoKoan {
    * @returns The number of documents in the products collection
    */
   public async countAll(): Promise< number | {error: any}> {
-    var result: number | { error: any };
     try {
       return await this.products.countDocuments({});
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -128,7 +127,7 @@ export class MongoKoan {
   public async addOne(product: Product): Promise<InsertOneResult<Product> | { error: any }> {
     try {
       return await this.products.insertOne(product);
-      // throw("To Be Implemented")      
+      // throw("To Be Implemented");      
     } catch (error) {
       return {"error": error };
     }
@@ -193,7 +192,7 @@ export class MongoKoan {
       const option = { returnDocument: ReturnDocument.AFTER };
 
       return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     } 
@@ -214,7 +213,7 @@ export class MongoKoan {
       const option = { returnDocument: ReturnDocument.AFTER };
 
       return await this.products.findOneAndUpdate(selector, updater, option) as ProductWithId;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -234,7 +233,7 @@ export class MongoKoan {
       const option = { returnDocument: ReturnDocument.AFTER };
 
       return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -254,7 +253,7 @@ export class MongoKoan {
       const option = { returnDocument: ReturnDocument.AFTER };
 
       return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -273,7 +272,7 @@ export class MongoKoan {
       const update = {$push:{tags: {$each:tags}}} as any;
       const option = { returnDocument: ReturnDocument.AFTER };
       return await this.products.findOneAndUpdate(filter, update, option) as ProductWithId;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -289,7 +288,7 @@ export class MongoKoan {
     try {
       const filter = {"id":id};
       return await this.products.deleteOne(filter);
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -310,7 +309,7 @@ export class MongoKoan {
       fields.forEach((field) => {projection[field] = 1;});
 
       return await this.products.find(selector).project(projection).toArray() as Array<ProductWithId>;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -335,7 +334,7 @@ export class MongoKoan {
         }
       };
       return await this.products.find(filter).toArray() as Array<ProductWithId>;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -351,7 +350,7 @@ export class MongoKoan {
     try {
       const filter = {status: {$in: statsOptions}};
       return await this.products.find(filter).sort({"name":1}).toArray() as Array<ProductWithId>;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -380,7 +379,7 @@ export class MongoKoan {
         {$project: projection},
       ];
       return await this.products.aggregate(pipeline).toArray() as Array<{name: string, status: string, added: string}>;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -392,23 +391,23 @@ export class MongoKoan {
    * @returns  an array of status, count, and quantity
    */
   public async aggregateGroupCount(): Promise<Array<{"_id": string, count: number, inventory: number}> | {error: any}> {
-      try {
-        const groupby = {_id:"$status", count: {$count:{}}, inventory:{$sum:"$inventoryQuantity"}};
-        const projection = {"count":1,"inventory":1};
-        const sort = {_id: 1};
-        const pipeline = [
-          {$group: groupby },
-          {$sort: sort},
-          {$project: projection},
-        ];
-        const cursor = this.products.aggregate(pipeline);
-        const reply = await cursor.toArray() as Array<{"_id": string, count: number, inventory: number}>;
-        return reply;
-        // throw("To Be Implemented")
-      } catch (error) {
-        return {"error":error};
-      }
+    try {
+      const groupby = {_id:"$status", count: {$count:{}}, inventory:{$sum:"$inventoryQuantity"}};
+      const projection = {"count":1,"inventory":1};
+      const sort = {_id: 1};
+      const pipeline = [
+        {$group: groupby },
+        {$sort: sort},
+        {$project: projection},
+      ];
+      const cursor = this.products.aggregate(pipeline);
+      const reply = await cursor.toArray() as Array<{"_id": string, count: number, inventory: number}>;
+      return reply;
+      // throw("To Be Implemented");
+    } catch (error) {
+      return {"error":error};
     }
+  }
   
   /**
    * Create a new index on the products collection that 
@@ -432,7 +431,7 @@ export class MongoKoan {
   public async listIndexs(): Promise<Array<IndexInformationOptions> | {error: any}> {
     try {
       return await this.products.indexes({full:true});
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -447,7 +446,7 @@ export class MongoKoan {
   public async dropIndex(name: string): Promise<any> {
     try {
       return await this.products.dropIndex(name);
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -466,7 +465,7 @@ export class MongoKoan {
           this.dropIndex(index.name);
         }
       });
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -489,7 +488,7 @@ export class MongoKoan {
         }
       }
       return quantity;
-      // throw("To Be Implemented")
+      // throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -590,13 +589,12 @@ export class MongoKoan {
   /**
    * disconnect from the mongo database
    */
-  public async disconnect(): Promise<void> {
+  public async disconnect(): Promise<void | {error:any}> {
     try {
-      await this.client.close();
+      return await this.client.close();
       // throw("To Be Implemented"); 
-      console.log("Disconnected from MongoDB");
     } catch (error) {
-      console.error("Failed to disconnect from MongoDB:", error);
+      return {error:error};
     }
   }
 }
