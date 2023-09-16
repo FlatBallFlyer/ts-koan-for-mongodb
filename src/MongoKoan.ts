@@ -2,7 +2,7 @@ import { productsData, statusData } from "./TestData";
 import { Product, ProductWithId } from "./models/Product";
 import { MongoClient, Db, Collection, InsertManyResult, 
   IndexInformationOptions, DeleteResult, InsertOneResult, 
-  ReturnDocument, FindOneAndReplaceOptions } from "mongodb";
+  ReturnDocument, FindOneAndReplaceOptions, UpdateResult } from "mongodb";
 
 export class MongoKoan {
   private dbName: string = "StageZero";
@@ -75,6 +75,22 @@ export class MongoKoan {
   }
 
   /**
+   * Get a product given the id 
+   * NOTE: This is id, not _id
+   * 
+   * @param id the id of the prodcut to return
+   * @returns a single product
+   */
+  public async getOne(id: string): Promise<ProductWithId | {error: any}> {
+    try {
+      return await this.products.findOne({"id": id}) as ProductWithId;
+      // throw("To Be Implemented")
+    } catch (error) {
+      return {"error":error};
+    }
+  }
+
+  /**
    * Get all the documents from the products collection
    * 
    * @returns Array of Products
@@ -119,18 +135,47 @@ export class MongoKoan {
   }
 
   /**
-   * Get a product given the id 
-   * NOTE: This is id, not _id
-   * 
-   * @param id the id of the prodcut to return
-   * @returns a single product
+   * upsert updateOne
    */
-  public async getOne(id: string): Promise<ProductWithId | {error: any}> {
+  public async upsertOneProduct(product: Product): Promise<UpdateResult<ProductWithId> | {error:any}> {
     try {
-      return await this.products.findOne({"id": id}) as ProductWithId;
-      // throw("To Be Implemented")
+      const query = { id: product.id };
+      const update = { $set: product };
+      const options = {upsert: true};
+      return await this.products.updateOne(query, update, options) as UpdateResult<ProductWithId>;
+      // throw("To Be Implemented"); 
     } catch (error) {
-      return {"error":error};
+      return {error:error};
+    }
+  }
+
+  /**
+   * upsert replaceOne
+   */
+  public async upreplaceOneProduct(product: Product): Promise<UpdateResult<ProductWithId> | {error:any}> {
+    try {
+      const query = { id: product.id };
+      const update = product;
+      const options = {upsert: true};
+      return await this.products.replaceOne(query, update, options) as UpdateResult<ProductWithId>;
+      // throw("To Be Implemented"); 
+    } catch (error) {
+      return {error:error};
+    }
+  }
+
+  /**
+   * upsert updateMany
+   */
+  public async upsertManyProducts(status: string, product: Product): Promise<UpdateResult<ProductWithId> | {error:any}> {
+    try {
+      const query = { status: status };
+      const update = { $set: product};
+      const options = {upsert: true};
+      return await this.products.updateMany(query, update, options) as UpdateResult<ProductWithId>;
+      // throw("To Be Implemented"); 
+    } catch (error) {
+      return {error:error};
     }
   }
 

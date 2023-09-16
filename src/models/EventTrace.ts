@@ -1,5 +1,5 @@
 export interface EventTrace {
-    at: Date;
+    at: string;
     from: string;   // IP address
     by: string;     // User UUID
   }

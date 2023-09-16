@@ -1,6 +1,6 @@
 import { MongoKoan } from './MongoKoan';
 import { Product, ProductWithId } from './models/Product';
-import { IndexInformationOptions, InsertManyResult, InsertOneResult, MongoServerError } from 'mongodb';
+import { IndexInformationOptions, InsertManyResult, InsertOneResult, MongoServerError, UpdateResult } from 'mongodb';
 import { Status } from './models/Status';
 
 describe('MongoKoan', () => {
@@ -105,7 +105,138 @@ describe('MongoKoan', () => {
     response.forEach(product => {
       expect(["active", "draft"].includes(product.status)).toBeTruthy();
     })
-    
+  });
+
+  test('test upsertOneProduct with update', async () => {
+    const product: Product = {
+      "id": "32916798-50fb-11ee-be56-0242ac120002",
+      "name": "Discontinued AquaPure Filter",
+      "status": "active",
+      "inventoryQuantity": 11,
+     };
+
+    const before = await mongoKoan.getOne(product.id) as ProductWithId;
+    expect(before.id).toBe(product.id);
+    expect(before.name).toBe("AquaPure Filter");
+    expect(before.status).toBe("active");
+    expect(before.inventoryQuantity).toBe(11)
+
+    const updateResponse = await mongoKoan.upsertOneProduct(product) as UpdateResult<ProductWithId>;
+    expect(updateResponse.acknowledged).toBe(true);
+    expect(updateResponse.matchedCount).toBe(1);
+    expect(updateResponse.upsertedCount).toBe(0);
+    expect(updateResponse.upsertedId).toBeNull();
+
+    const after = await mongoKoan.getOne(product.id) as ProductWithId;
+    expect(after).toMatchObject(product);
+    expect(after).toHaveProperty("inventoryQuantity");
+    expect(after.inventoryQuantity).toBe(11);
+
+  });
+
+  test('test upsertOneProduct with insert', async () => {
+    const product: Product = {
+      "id": "test upsertOneProduct with insert",
+      "name": "TESTING PRODUCT",
+      "status": "off",
+     };
+
+    const before = await mongoKoan.getOne(product.id) as ProductWithId;
+    expect(before).toBeNull();
+
+    const updateResponse = await mongoKoan.upsertOneProduct(product) as UpdateResult<ProductWithId>;
+    expect(updateResponse.acknowledged).toBe(true);
+    expect(updateResponse.matchedCount).toBe(0);
+    expect(updateResponse.upsertedCount).toBe(1);
+    expect(updateResponse.upsertedId).not.toBeNull();
+
+    const after = await mongoKoan.getOne(product.id) as ProductWithId;
+    expect(after).toMatchObject(product);
+    expect(after).not.toHaveProperty("description");
+    expect(after).not.toHaveProperty("inventoryQuantity");
+    expect(after).not.toHaveProperty("lastUpdated");
+    });
+
+  test('test upreplaceOneProduct with replace', async () => {
+    const beforeProduct: Product = {
+      "id": "32916cca-50fb-11ee-be56-0242ac120002",
+      "name": "EasySlice Knife",
+      "description": "Stainless steel kitchen knife set.",
+      "inventoryQuantity": 32,
+      "status": "active",
+      "lastUpdated": {
+        "at": "2023-09-08T15:00:21Z",
+        "from": "192.168.1.25",
+        "by": "ee5e77ff-9e88-42a9-b1f7-g27g377cf63d"
+      }
+    };
+
+    const replaceProduct: Product = {
+      "id": "32916cca-50fb-11ee-be56-0242ac120002",
+      "name": "DISCONTINUED EasySlice Knife",
+      "status": "active",
+      "inventoryQuantity": 32,
+    };
+
+    const before = await mongoKoan.getOne(beforeProduct.id) as ProductWithId;
+    expect(before).toMatchObject(beforeProduct);
+
+    const updateResponse = await mongoKoan.upreplaceOneProduct(replaceProduct) as UpdateResult<ProductWithId>;
+    expect(updateResponse.acknowledged).toBe(true);
+    expect(updateResponse.matchedCount).toBe(1);
+    expect(updateResponse.upsertedCount).toBe(0);
+    expect(updateResponse.upsertedId).toBeNull();
+
+    const after = await mongoKoan.getOne(replaceProduct.id) as ProductWithId;
+    expect(after).toMatchObject(replaceProduct);
+    expect(after).not.toHaveProperty("description");
+    expect(after).not.toHaveProperty("lastUpdated");
+  });
+  
+  test('test upreplaceOneProduct with insert', async () => {
+    const replaceProduct: Product = {
+      "id": "test upreplaceOneProduct with insert",
+      "name": "TEST INSERTED upreplaceOneProduct",
+      "status": "off",
+    };
+
+    const before = await mongoKoan.getOne(replaceProduct.id) as ProductWithId;
+    expect(before).toBeNull();
+
+    const updateResponse = await mongoKoan.upreplaceOneProduct(replaceProduct) as UpdateResult<ProductWithId>;
+    expect(updateResponse.acknowledged).toBe(true);
+    expect(updateResponse.matchedCount).toBe(0);
+    expect(updateResponse.upsertedCount).toBe(1);
+    expect(updateResponse.upsertedId).not.toBeNull();
+
+    const after = await mongoKoan.getOne(replaceProduct.id) as ProductWithId;
+    expect(after).toMatchObject(replaceProduct);
+    expect(after).not.toHaveProperty("description");
+    expect(after).not.toHaveProperty("inventoryQuantity");
+    expect(after).not.toHaveProperty("lastUpdated");
+  });
+  
+  test('test upsertManyProducts', async () => {
+    const newProduct: Product = {
+      "id": "test upsertManyProducts",
+      "name": "TEST INSERTED upsertManyProducts",
+      "status": "off",
+    };
+
+    const before = await mongoKoan.getOne(newProduct.id) as ProductWithId;
+    expect(before).toBeNull();
+
+    const updateResponse = await mongoKoan.upsertManyProducts("FOO", newProduct) as UpdateResult<ProductWithId>;
+    expect(updateResponse.acknowledged).toBe(true);
+    expect(updateResponse.matchedCount).toBe(0);
+    expect(updateResponse.upsertedCount).toBe(1);
+    expect(updateResponse.upsertedId).not.toBeNull();
+
+    const after = await mongoKoan.getOne(newProduct.id) as ProductWithId;
+    expect(after).toMatchObject(newProduct);
+    expect(after).not.toHaveProperty("description");
+    expect(after).not.toHaveProperty("inventoryQuantity");
+    expect(after).not.toHaveProperty("lastUpdated");
   });
 
   test('test aggregateSortAdd', async () => {
@@ -125,7 +256,7 @@ describe('MongoKoan', () => {
     const id: string = "";
     const response = await mongoKoan.aggregateGroupCount() as Array<{"_id": string, count: number, inventory: number}>;
     expect(response).toBeInstanceOf(Array<{"_id": string, count: number, inventory: number}>);
-    expect(response).toHaveLength(3);
+    expect(response).toHaveLength(4);
     expect(response[0]._id).toBe("active");
     expect(response[0].count).toBe(17);
     expect(response[0].inventory).toBe(381);
@@ -135,6 +266,9 @@ describe('MongoKoan', () => {
     expect(response[2]._id).toBe("draft");
     expect(response[2].count).toBe(11);
     expect(response[2].inventory).toBe(189);
+    expect(response[3]._id).toBe("off");
+    expect(response[3].count).toBe(3);
+    expect(response[3].inventory).toBe(0);
   });
 
   test('test create, list, drop Index', async () => {
