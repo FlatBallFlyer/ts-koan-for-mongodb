@@ -1,6 +1,8 @@
 import { productsData, statusData } from "./TestData";
 import { Product, ProductWithId } from "./models/Product";
-import { MongoClient, Db, Collection, InsertManyResult, IndexInformationOptions, DeleteResult, InsertOneResult, ReturnDocument, FindOneAndReplaceOptions } from "mongodb";
+import { MongoClient, Db, Collection, InsertManyResult, 
+  IndexInformationOptions, DeleteResult, InsertOneResult, 
+  ReturnDocument, FindOneAndReplaceOptions, UpdateResult } from "mongodb";
 
 // To complete this koan you will need to write the methods below
 // I strongly suggest starting with the connect, deleteAll, and disconnect methods
@@ -9,11 +11,15 @@ export class MongoKoan {
   private productsCollectionName: string = "Koan_products";
   private statusCollectionName: string = "Koan_status";
   private uri: string = "mongodb://root:example@localhost:27017/?tls=false&directConnection=true";
+  
   private client: MongoClient;
   private db!: Db; 
   private products!: Collection;
   private status!: Collection;
 
+  /**
+   * Constructor - initilize client with connection URI
+   */
   constructor() {
     this.client = new MongoClient(this.uri);
   }
@@ -26,7 +32,7 @@ export class MongoKoan {
    */
   public async connect(): Promise<Array<IndexInformationOptions> | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error": error};
     }
@@ -40,7 +46,7 @@ export class MongoKoan {
    */
   public async loadAllProducts(): Promise<InsertManyResult<ProductWithId> | { error: any }> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return { error };
     }
@@ -61,13 +67,28 @@ export class MongoKoan {
   }
 
   /**
+   * Get a product given the id 
+   * NOTE: This is id, not _id
+   * 
+   * @param id the id of the prodcut to return
+   * @returns a single product
+   */
+  public async getOne(id: string): Promise<ProductWithId | {error: any}> {
+    try {
+      throw("To Be Implemented");
+    } catch (error) {
+      return {"error":error};
+    }
+  }
+
+  /**
    * Get all the documents from the products collection
    * 
    * @returns Array of Products
    */
   public async getAll(): Promise< Array<ProductWithId> | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -80,7 +101,7 @@ export class MongoKoan {
    */
   public async countAll(): Promise< number | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -94,24 +115,42 @@ export class MongoKoan {
    */
   public async addOne(product: Product): Promise<InsertOneResult<Product> | { error: any }> {
     try {
-      throw("To Be Implemented")      
+      throw("To Be Implemented");      
     } catch (error) {
       return {"error": error };
     }
   }
 
   /**
-   * Get a product given the id 
-   * NOTE: This is id, not _id
-   * 
-   * @param id the id of the prodcut to return
-   * @returns a single product
+   * upsert updateOne
    */
-  public async getOne(id: string): Promise<ProductWithId | {error: any}> {
+  public async upsertOneProduct(product: Product): Promise<UpdateResult<ProductWithId> | {error:any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented"); 
     } catch (error) {
-      return {"error":error};
+      return {error:error};
+    }
+  }
+
+  /**
+   * upsert replaceOne
+   */
+  public async upreplaceOneProduct(product: Product): Promise<UpdateResult<ProductWithId> | {error:any}> {
+    try {
+      throw("To Be Implemented"); 
+    } catch (error) {
+      return {error:error};
+    }
+  }
+
+  /**
+   * upsert updateMany
+   */
+  public async upsertManyProducts(status: string, product: Product): Promise<UpdateResult<ProductWithId> | {error:any}> {
+    try {
+      throw("To Be Implemented"); 
+    } catch (error) {
+      return {error:error};
     }
   }
 
@@ -124,7 +163,7 @@ export class MongoKoan {
    */
   public async setInStock(id: string, quantity: number): Promise<ProductWithId | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     } 
@@ -140,7 +179,7 @@ export class MongoKoan {
    */
   public async decrementInventoryQuantity(id: string, quantity: number): Promise<ProductWithId | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -155,7 +194,7 @@ export class MongoKoan {
    */
   public async addTags(id: string, tags: Array<string>): Promise<ProductWithId | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -170,7 +209,7 @@ export class MongoKoan {
    */
   public async pushTag(id: string, tag: string): Promise<ProductWithId | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -185,7 +224,7 @@ export class MongoKoan {
    */
   public async pushTags(id: string, tags: Array<string>): Promise<ProductWithId | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -199,7 +238,7 @@ export class MongoKoan {
    */
   public async deleteOne(id: string): Promise<DeleteResult | {error: any}>{
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -215,7 +254,7 @@ export class MongoKoan {
    */
   public async getWithProjection(minimumName: string, fields: Array<string>): Promise<Array<ProductWithId> | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -231,7 +270,7 @@ export class MongoKoan {
    */
   public async elemMatch(description: string, minimumCredit: number): Promise<Array<ProductWithId> | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -247,7 +286,7 @@ export class MongoKoan {
     // this method should
     //  find all the products with a Status that is in the list of status provided in statusOptions
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -269,7 +308,7 @@ export class MongoKoan {
     //  add a "added" attribute to the results, with a value provided in addTextValue
     //  create a projection that includes only the name, status, and added attributes
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -281,12 +320,12 @@ export class MongoKoan {
    * @returns  an array of status, count, and quantity
    */
   public async aggregateGroupCount(): Promise<Array<{"_id": string, count: number, inventory: number}> | {error: any}> {
-      try {
-        throw("To Be Implemented")
-      } catch (error) {
-        return {"error":error};
-      }
+    try {
+      throw("To Be Implemented");
+    } catch (error) {
+      return {"error":error};
     }
+  }
   
   /**
    * Create a new index on the products collection that 
@@ -296,7 +335,7 @@ export class MongoKoan {
    */
   public async createUniqueNameIndex(): Promise<string | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -311,7 +350,7 @@ export class MongoKoan {
     // this method should
     //  return a list of the indexes in the collection
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -327,7 +366,7 @@ export class MongoKoan {
     // this method should drop the identified index
     //  and return the response with statistics
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -343,7 +382,7 @@ export class MongoKoan {
     //  iterate over all the indexes in the colleciton
     //  drop every index that is not named "_id_"
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -356,7 +395,7 @@ export class MongoKoan {
    */
   public async cursorIterate(): Promise<number | {error: any}> {
     try {
-      throw("To Be Implemented")
+      throw("To Be Implemented");
     } catch (error) {
       return {"error":error};
     }
@@ -426,11 +465,11 @@ export class MongoKoan {
   /**
    * disconnect from the mongo database
    */
-  public async disconnect(): Promise<void> {
+  public async disconnect(): Promise<{error: any}> {
     try {
       throw("To Be Implemented"); 
     } catch (error) {
-      console.error("Failed to disconnect from MongoDB:", error);
+      return {error:error};
     }
   }
 }

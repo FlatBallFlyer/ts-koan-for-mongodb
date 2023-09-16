@@ -2,7 +2,6 @@
 
 [ChatGPT taught me TypeScript and Jest](https://chat.openai.com/share/498bc1cf-f0cc-4417-b19c-6405f6a76573) so I created this MongoDB Koan.
 
-
 ## Contributors
 
 All contributions are welcome. There is a solutions branch, start from there. I am aware that this project breaks all kinds of unit testing best practices, we are using a backing service in unit tests after all. The jest tests are subject to timing problems, I did my best to minimize the probablilty that would occur, but the group by and count methods are still vunerable to disruption by other tests.
