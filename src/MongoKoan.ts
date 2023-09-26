@@ -5,11 +5,17 @@ import { MongoClient, Db, Collection, InsertManyResult,
   ReturnDocument, FindOneAndReplaceOptions, UpdateResult } from "mongodb";
 
 export class MongoKoan {
+  /**
+   * Configuration Values
+   */
   private dbName: string = "StageZero";
   private productsCollectionName: string = "Koan_products";
   private statusCollectionName: string = "Koan_status";
   private uri: string = "mongodb://root:example@localhost:27017/?tls=false&directConnection=true";
   
+  /**
+   * Mongo Databse objects
+   */
   private client: MongoClient;
   private db!: Db; 
   private products!: Collection;
