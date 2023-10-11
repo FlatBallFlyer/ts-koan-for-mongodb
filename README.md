@@ -76,3 +76,13 @@ npm run tsc:watch
 ```bash
 npm run test:watch
 ```
+
+## Backlog
+
+- [ ] Refactor all tests to more closely mimic exam style
+- [ ] Add $out stage test
+- [ ] Add better $and $or examples
+- [ ] Add findOne with $order (first / last)
+- [ ] Add find with values in [] mixed with string in same field (list.string)
+- [ ] Eliminate unnecessary casting i.e.
+```const updateResponse: UpdateResult<ProductWithId> = await mongoKoan.upreplaceOneProduct(replaceProduct);```
